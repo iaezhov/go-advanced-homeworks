@@ -1,8 +1,8 @@
 package main
 
 import (
-	"3-validation-api/3-validation-api/configs"
-	"3-validation-api/3-validation-api/internal/verify"
+	"3-validation-api/configs"
+	"3-validation-api/internal/verify"
 	"fmt"
 	"net/http"
 )
