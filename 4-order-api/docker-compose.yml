@@ -1,0 +1,14 @@
+services:
+  postgres:
+    container_name: postgres_orders_api
+    image: postgres:16.4
+    user: "999:999"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      PGDATA: /data/postgres
+    volumes:
+      - ./postgres-data:/data/postgres
+    ports:
+      - "${DB_PORT:-5432}:5432"
