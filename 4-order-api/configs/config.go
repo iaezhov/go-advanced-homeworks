@@ -11,6 +11,7 @@ import (
 
 type Config struct {
 	Db      DbConfig
+	Auth    AuthConfig
 	AppPort string
 }
 type DbConfig struct {
@@ -20,6 +21,9 @@ type DbConfig struct {
 	DBPassword string
 	DBName     string
 	DBSSLMode  string
+}
+type AuthConfig struct {
+	Secret string
 }
 
 func LoadConfig() *Config {
@@ -35,6 +39,9 @@ func LoadConfig() *Config {
 			DBPassword: getEnvAsStr("DB_PASSWORD", ""),
 			DBName:     getEnvAsStr("DB_NAME", ""),
 			DBSSLMode:  getEnvAsStr("DB_SSLMODE", "disable"),
+		},
+		Auth: AuthConfig{
+			Secret: getEnvAsStr("SECRET", ""),
 		},
 		AppPort: getEnvAsStr("APP_PORT", "8081"),
 	}
