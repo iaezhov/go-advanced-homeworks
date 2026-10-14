@@ -1,6 +1,8 @@
 package product
 
 import (
+	"4-order-api/pkg/jwt"
+	"4-order-api/pkg/middleware"
 	"4-order-api/pkg/req"
 	"4-order-api/pkg/res"
 	"errors"
@@ -12,6 +14,7 @@ import (
 
 type ProductHandlerDeps struct {
 	ProductRepository *ProductRepository
+	JWT               *jwt.JWT
 }
 type ProductHandler struct {
 	ProductRepository *ProductRepository
@@ -21,10 +24,10 @@ func NewProductHandler(router *http.ServeMux, deps ProductHandlerDeps) {
 	handler := &ProductHandler{
 		ProductRepository: deps.ProductRepository,
 	}
-	router.HandleFunc("POST /product", handler.Create())
-	router.HandleFunc("PATCH /product/{id}", handler.Update())
-	router.HandleFunc("DELETE /product/{id}", handler.Delete())
-	router.HandleFunc("GET /product/{id}", handler.Get())
+	router.Handle("POST /product", middleware.IsAuthed(handler.Create(), deps.JWT))
+	router.Handle("PATCH /product/{id}", middleware.IsAuthed(handler.Update(), deps.JWT))
+	router.Handle("DELETE /product/{id}", middleware.IsAuthed(handler.Delete(), deps.JWT))
+	router.Handle("GET /product/{id}", middleware.IsAuthed(handler.Get(), deps.JWT))
 }
 
 func (handler *ProductHandler) Get() http.HandlerFunc {
