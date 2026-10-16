@@ -56,7 +56,7 @@ func (handler *AuthHandler) Verify() http.HandlerFunc {
 			return
 		}
 
-		phone, err := handler.AuthService.Verify(body.SessionId, body.Code)
+		user, err := handler.AuthService.Verify(body.SessionId, body.Code)
 		if err != nil {
 			statusCode := http.StatusInternalServerError
 			if errors.Is(err, ErrWrongCredentials) {
@@ -66,7 +66,7 @@ func (handler *AuthHandler) Verify() http.HandlerFunc {
 			return
 		}
 
-		token, err := handler.JWT.Create(phone)
+		token, err := handler.JWT.Create(user.ID)
 		if err != nil {
 			res.Json(w, err.Error(), http.StatusInternalServerError)
 			return

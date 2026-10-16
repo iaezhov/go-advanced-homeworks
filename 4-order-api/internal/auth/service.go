@@ -33,13 +33,13 @@ func (service *AuthService) Login(phone string) (sessionId string, error error) 
 	return newUser.SessionId, nil
 }
 
-func (service *AuthService) Verify(sessionId string, code int) (phone string, error error) {
+func (service *AuthService) Verify(sessionId string, code int) (user *user.User, error error) {
 	existedUser, err := service.UserRepository.FindBySessionId(sessionId)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	if existedUser == nil || existedUser.Code != code {
-		return "", ErrWrongCredentials
+		return nil, ErrWrongCredentials
 	}
-	return existedUser.Phone, nil
+	return existedUser, nil
 }
