@@ -1,6 +1,7 @@
 package user
 
 import (
+	"4-order-api/internal/order"
 	"math/rand"
 
 	"gorm.io/gorm"
@@ -11,6 +12,7 @@ type User struct {
 	Phone     string `gorm:"index"`
 	SessionId string `gorm:"index"`
 	Code      int
+	Orders    []order.Order
 }
 
 func NewUser(phone string) *User {

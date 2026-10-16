@@ -2,6 +2,7 @@ package main
 
 import (
 	"4-order-api/configs"
+	"4-order-api/internal/order"
 	"4-order-api/internal/product"
 	"4-order-api/internal/user"
 	"4-order-api/pkg/db"
@@ -10,6 +11,5 @@ import (
 func main() {
 	config := configs.LoadConfig()
 	database := db.NewDb(config)
-	database.AutoMigrate(&product.Product{})
-	database.AutoMigrate(&user.User{})
+	database.AutoMigrate(&product.Product{}, &user.User{}, &order.Order{}, &order.OrderItem{})
 }

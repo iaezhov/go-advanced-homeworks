@@ -7,7 +7,6 @@ import (
 	"4-order-api/pkg/res"
 	"errors"
 	"net/http"
-	"strconv"
 
 	"gorm.io/gorm"
 )
@@ -32,7 +31,7 @@ func NewProductHandler(router *http.ServeMux, deps ProductHandlerDeps) {
 
 func (handler *ProductHandler) Get() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id, err := getIdFromPath(r)
+		id, err := req.GetIDFromPath(r)
 		if err != nil {
 			res.Json(w, err.Error(), http.StatusBadRequest)
 			return
@@ -81,7 +80,7 @@ func (handler *ProductHandler) Update() http.HandlerFunc {
 			return
 		}
 
-		id, err := getIdFromPath(r)
+		id, err := req.GetIDFromPath(r)
 		if err != nil {
 			res.Json(w, err.Error(), http.StatusBadRequest)
 			return
@@ -104,7 +103,7 @@ func (handler *ProductHandler) Update() http.HandlerFunc {
 
 func (handler *ProductHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id, err := getIdFromPath(r)
+		id, err := req.GetIDFromPath(r)
 		if err != nil {
 			res.Json(w, err.Error(), http.StatusBadRequest)
 			return
@@ -128,18 +127,4 @@ func (handler *ProductHandler) Delete() http.HandlerFunc {
 
 		res.Json(w, nil, http.StatusOK)
 	}
-}
-
-func getIdFromPath(r *http.Request) (uint, error) {
-	idStr := r.PathValue("id")
-	if idStr == "" {
-		return 0, errors.New("Отсутствует Id")
-	}
-
-	id, err := strconv.ParseUint(idStr, 10, 64)
-	if err != nil || id == 0 {
-		return 0, errors.New("Неверный формат id")
-	}
-
-	return uint(id), nil
 }
