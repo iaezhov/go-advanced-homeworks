@@ -3,6 +3,7 @@ package main
 import (
 	"4-order-api/configs"
 	"4-order-api/internal/auth"
+	"4-order-api/internal/order"
 	"4-order-api/internal/product"
 	"4-order-api/internal/user"
 	"4-order-api/pkg/db"
@@ -18,8 +19,7 @@ func init() {
 	log.SetFormatter(&log.JSONFormatter{})
 }
 
-func main() {
-	config := configs.LoadConfig()
+func App(config *configs.Config) http.Handler {
 	router := http.NewServeMux()
 	database := db.NewDb(config)
 	jwtPackage := jwt.NewJWT(config.Auth.Secret)
@@ -30,11 +30,13 @@ func main() {
 	// Repositories
 	productRepository := product.NewProductRepository(database)
 	userRepository := user.NewUserRepository(database)
+	orderRepository := order.NewOrderRepository(database)
 
 	// Services
 	authService := auth.NewAuthService(&auth.AuthServiceDeps{
 		UserRepository: userRepository,
 	})
+	orderService := order.NewOrderService(orderRepository, productRepository)
 
 	// Handlers
 	product.NewProductHandler(router, product.ProductHandlerDeps{
@@ -45,13 +47,19 @@ func main() {
 		AuthService: authService,
 		JWT:         jwtPackage,
 	})
+	order.NewOrderHandler(router, order.OrderHandlerDeps{
+		OrderService: orderService,
+		JWT:          jwtPackage,
+	})
+	return mds(router)
+}
 
-	// Server
+func main() {
+	config := configs.LoadConfig()
 	server := http.Server{
 		Addr:    ":" + config.AppPort,
-		Handler: mds(router),
+		Handler: App(config),
 	}
 	fmt.Printf("Server is listening on port %v\n", config.AppPort)
 	server.ListenAndServe()
-
 }

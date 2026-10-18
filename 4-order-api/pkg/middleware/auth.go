@@ -10,8 +10,8 @@ import (
 type key string
 
 const (
-	PhoneContextKey key    = "phone"
-	authPrefix      string = "Bearer "
+	UserIdContextKey key    = "user_id"
+	authPrefix       string = "Bearer "
 )
 
 func writeUnauthed(w http.ResponseWriter) {
@@ -33,14 +33,14 @@ func IsAuthed(next http.Handler, JWT *jwt.JWT) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), PhoneContextKey, data.Phone)
+		ctx := context.WithValue(r.Context(), UserIdContextKey, data.UserID)
 		req := r.WithContext(ctx)
 
 		next.ServeHTTP(w, req)
 	})
 }
 
-func GetPhone(ctx context.Context) (string, bool) {
-	phone, ok := ctx.Value(PhoneContextKey).(string)
-	return phone, ok
+func GetUserID(ctx context.Context) (uint, bool) {
+	userID, ok := ctx.Value(UserIdContextKey).(uint)
+	return userID, ok
 }
