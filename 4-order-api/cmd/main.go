@@ -19,8 +19,7 @@ func init() {
 	log.SetFormatter(&log.JSONFormatter{})
 }
 
-func main() {
-	config := configs.LoadConfig()
+func App(config *configs.Config) http.Handler {
 	router := http.NewServeMux()
 	database := db.NewDb(config)
 	jwtPackage := jwt.NewJWT(config.Auth.Secret)
@@ -50,13 +49,16 @@ func main() {
 	})
 	order.NewOrderHandler(router, order.OrderHandlerDeps{
 		OrderService: orderService,
-		JWT:           jwtPackage,
+		JWT:          jwtPackage,
 	})
+	return mds(router)
+}
 
-	// Server
+func main() {
+	config := configs.LoadConfig()
 	server := http.Server{
 		Addr:    ":" + config.AppPort,
-		Handler: mds(router),
+		Handler: App(config),
 	}
 	fmt.Printf("Server is listening on port %v\n", config.AppPort)
 	server.ListenAndServe()
